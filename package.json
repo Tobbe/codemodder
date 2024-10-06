@@ -35,11 +35,8 @@
     "*": "prettier --ignore-unknown --write"
   },
   "dependencies": {
-    "@langchain/core": "^0.2.10",
-    "@langchain/openai": "^0.2.1",
     "dotenv": "^16.4.5",
     "jscodeshift": "0.16.1",
-    "langchain": "^0.2.8",
     "openai": "4.52.2",
     "prettier": "3.3.2"
   },
@@ -85,10 +82,5 @@
   },
   "publishConfig": {
     "provenance": true
-  },
-  "pnpm": {
-    "overrides": {
-      "@langchain/core": "0.2.10"
-    }
   }
 }
