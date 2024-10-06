@@ -70,6 +70,13 @@ export default tseslint.config(
 
       // These on-by-default rules work well for this repo if configured
       "@typescript-eslint/no-unused-vars": ["error", { caughtErrors: "all" }],
+      // "@typescript-eslint/restrict-template-expressions": "error",
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        {
+          allowNumber: true,
+        },
+      ],
       "perfectionist/sort-objects": [
         "error",
         {
@@ -78,6 +85,7 @@ export default tseslint.config(
           type: "natural",
         },
       ],
+      "jsdoc/tag-lines": ["error", "any", { startLines: 1 }],
 
       // Stylistic concerns that don't interfere with Prettier
       "no-useless-rename": "error",
