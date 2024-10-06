@@ -1,10 +1,4 @@
-import {
-  API,
-  Collection,
-  FileInfo,
-  ImportSpecifier,
-  JSCodeshift,
-} from "jscodeshift";
+import { API, Collection, FileInfo, JSCodeshift } from "jscodeshift";
 
 function transform(file: FileInfo, api: API): string {
   const j: JSCodeshift = api.jscodeshift;
@@ -14,22 +8,13 @@ function transform(file: FileInfo, api: API): string {
     .find(j.ImportDeclaration)
     .filter((path) => path.node.source.value === "@redwoodjs/router")
     .forEach((path) => {
-      const specifiers = path.node.specifiers;
-
-      if (!specifiers) {
-        // Ensure specifiers is not undefined
-        return;
-      }
-
-      // Filter specifiers to find those to be moved to the new import
-      const specifiersToBeMoved = (specifiers as ImportSpecifier[]).filter(
+      const specifiersToBeMoved = path.node.specifiers.filter(
         (specifier) =>
           specifier.type === "ImportSpecifier" &&
           specifier.imported.name === "Router",
       );
 
-      // Determine the remaining specifiers for the current import declaration
-      const remainingSpecifiers = (specifiers as ImportSpecifier[]).filter(
+      const remainingSpecifiers = path.node.specifiers.filter(
         (specifier) =>
           !(
             specifier.type === "ImportSpecifier" &&

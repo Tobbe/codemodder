@@ -37,7 +37,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "jscodeshift": "0.16.1",
-    "openai": "4.52.2",
+    "openai": "4.67.1",
     "prettier": "3.3.2"
   },
   "devDependencies": {

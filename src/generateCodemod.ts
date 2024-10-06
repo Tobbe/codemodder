@@ -75,7 +75,7 @@ export async function generateCodemod(
         role: "user",
       },
     ],
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o",
     n: 1,
     temperature: 1,
   });
