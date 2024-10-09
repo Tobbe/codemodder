@@ -37,6 +37,19 @@ function wrapInput(exampleInput: string) {
  * @param exampleInput valid TypeScript code to generate variations for
  */
 export async function generateInputVariations(exampleInput: string) {
+  if (Math.random() < 5) {
+    return [
+      'import { Route } from "@redwoodjs/router";\nimport { Router } from "@redwoodjs/router";',
+      'import { Router as RedwoodRouter, Route } from "@redwoodjs/router";',
+      'import { Router, Route, navigate } from "@redwoodjs/router"',
+      'import { Router, Route } from "@redwoodjs/router";\nimport { Link } from "@redwoodjs/router";',
+      'import { Router, Route, Private } from "@redwoodjs/router";',
+      'import { Router, Route } from "@redwoodjs/router";\nconst isLoggedIn = true;',
+      'import { Router } from "@redwoodjs/router";\nimport { Route } from "@redwoodjs/router";\nimport Home from "./Home";\nimport About from "./About"',
+      'import { Router } from "@redwoodjs/router";\nimport type { Route } from "@redwoodjs/router";',
+    ];
+  }
+
   const chatCompletion = await openAi.chat.completions.create({
     messages: [
       { content: systemMessage, role: "system" },
