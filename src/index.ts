@@ -2,15 +2,18 @@ import fs from "node:fs";
 // eslint-disable-next-line n/no-unsupported-features/node-builtins
 import readline from "node:readline/promises";
 
+import { runEslintFix } from "./eslint.js";
+import { generateInputVariations } from "./generateInputVariations.js";
+import { runPrettierWrite } from "./prettier.js";
+// import { generateTestCaseTitles } from "./generateTestCaseTitlesForDescription.js";
+// import { generateTests } from "./generateTests.js";
+import { generateCodemod } from "./generateCodemod.js";
+import { runTsc } from "./tsc.js";
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-
-import { generateInputVariations } from "./generateInputVariations.js";
-// import { generateTestCaseTitles } from "./generateTestCaseTitlesForDescription.js";
-// import { generateTests } from "./generateTests.js";
-import { generateCodemod } from "./generateCodemod.js";
 
 const exampleInput = "import { Router, Route } from '@redwoodjs/router'";
 const exampleOutput = `import { Route } from '@redwoodjs/router',
@@ -37,12 +40,25 @@ console.log(
 await rl.question("Press Enter to continue...");
 rl.close();
 
-const codemod = await generateCodemod(
-  exampleInput,
-  exampleOutput,
-  codemodDescription,
-);
+if (Math.random() > 5) {
+  const codemod = await generateCodemod(
+    exampleInput,
+    exampleOutput,
+    codemodDescription,
+  );
 
-console.log("index.ts: codemod");
-console.log(codemod);
-fs.writeFileSync("codemod.ts", codemod ?? "");
+  console.log("index.ts: codemod");
+  console.log(codemod);
+  fs.writeFileSync("codemod.ts", codemod ?? "");
+}
+
+const eslintResult = await runEslintFix("codemod.ts");
+await runPrettierWrite("codemod.ts");
+const tscResult = await runTsc("codemod.ts");
+
+if (eslintResult.length === 0 && tscResult.length === 0) {
+  console.log("All checks passed!");
+} else {
+  console.log("eslintResult", eslintResult);
+  console.log("tscResult", tscResult);
+}
