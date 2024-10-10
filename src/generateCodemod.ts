@@ -8,42 +8,51 @@ const openAi = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-function constructCodemodGenerationSystemMessage(
-  exampleInput: string,
-  exampleOutput: string,
-  inputVariations: string,
-  codemodDescription: string,
-) {
-  return `You're an expert TypeScript and React developer. You always practice
-Test Driven Development, so you always write tests first, before writing any
-code. Your job is to write a codemod using jscodeshift for the given input.
+const systemMessage = `You're an expert TypeScript and React developer. Your
+job is to write a codemod using jscodeshift for the given input.
 The codemod should be written in TypeScript and use generics where appropriate
-for full type safety. Never use the \`any\` type in your codemod. Always
-explicitly type input parameters to functions.
+for full type safety. Never use the \`any\` type in your codemod. Don't do any
+type casting (type asserting). Always explicitly type input parameters to all
+functions.
+`;
 
-You will now be given an example of input that the codemod will need to handle
-(enclosed in "--- BEGIN INPUT ---" and "--- END INPUT ---" markers):
+function composeInputOutputPart(exampleInput: string, exampleOutput: string) {
+  return `You will now be given an example of input that the codemod will need
+to handle. I use tripple backticks to enclose code blocks. The example input is
 
---- BEGIN INPUT ---
+\`\`\`
 ${exampleInput}
---- END INPUT ---
+\`\`\`
 
-The expected output for that input is (enclosed in "--- BEGIN OUTPUT ---" and
-"--- END OUTPUT ---" markers):
+The expected output for that input is:
 
---- BEGIN OUTPUT ---
+\`\`\`
 ${exampleOutput}
---- END OUTPUT ---
+\`\`\`
 
-Here's some more example input variations that you need to handle (enclosed in
-"--- BEGIN VARIATIONS ---" and "--- END VARIATIONS ---" and separated by
-"--- SEPARATOR ---" markers):
+`;
+}
 
---- BEGIN VARIATIONS ---
-${inputVariations}
---- END VARIATIONS ---
+function composeVariationsPart(inputVariations?: string[]) {
+  if (!inputVariations || inputVariations.length < 1) {
+    return "";
+  }
 
-Here's a description of the codemod that you need to implement (enclosed in
+  const inputVariationsString = inputVariations.join("\n```\n\n```\n");
+
+  return `Here are more example input variations that you need to handle:
+
+\`\`\`
+${inputVariationsString}
+\`\`\`
+
+That was the end of all examples.
+
+`;
+}
+
+function composeDescriptionPart(codemodDescription: string) {
+  return `Here's a description of the codemod that you need to implement (enclosed in
 "--- BEGIN DESCRIPTION ---" and "--- END DESCRIPTION ---" markers):
 
 --- BEGIN DESCRIPTION ---
@@ -51,7 +60,7 @@ ${codemodDescription}
 --- END DESCRIPTION ---
 
 Reply with the code for the codemod. Please no preamble, no explanations, no code
-markers and no other formatting. But do please also include helpful code
+markers or code blocks and no other formatting. But do please also include helpful code
 comments to explain the codemod. And remember to generate strictly type-safe
 code.
 `;
@@ -63,15 +72,19 @@ export async function generateCodemod(
   inputVariations: string[],
   codemodDescription: string,
 ) {
+  const userMessagePart1 = composeInputOutputPart(exampleInput, exampleOutput);
+  const userMessagePart2 = composeVariationsPart(inputVariations);
+  const userMessagePart3 = composeDescriptionPart(codemodDescription);
+  const userMessage = userMessagePart1 + userMessagePart2 + userMessagePart3;
+
   const chatCompletion = await openAi.chat.completions.create({
     messages: [
       {
-        content: constructCodemodGenerationSystemMessage(
-          exampleInput,
-          exampleOutput,
-          inputVariations.join("\n--- SEPARATOR ---\n"),
-          codemodDescription,
-        ),
+        content: systemMessage,
+        role: "system",
+      },
+      {
+        content: userMessage,
         role: "user",
       },
     ],

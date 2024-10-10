@@ -6,8 +6,8 @@ import { generateInputVariations } from "./generateInputVariations.js";
 import { generateCodemod } from "./generateCodemod.js";
 
 const exampleInput = "import { Router, Route } from '@redwoodjs/router'";
-const exampleOutput = `import { Router } from '@redwoodjs/vite/Router'
-import { Route } from '@redwoodjs/router'`;
+const exampleOutput = `import { Route } from '@redwoodjs/router',
+import { Router } from '@redwoodjs/vite/Router'`;
 const codemodDescription =
   "The codemod should change all `Router` imports from " +
   "`@redwoodjs/router` to import from `@redwoodjs/vite/Router` instead. For " +
