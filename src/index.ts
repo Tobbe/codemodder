@@ -1,4 +1,11 @@
 import fs from "node:fs";
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
+import readline from "node:readline/promises";
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 import { generateInputVariations } from "./generateInputVariations.js";
 // import { generateTestCaseTitles } from "./generateTestCaseTitlesForDescription.js";
@@ -17,31 +24,25 @@ const codemodDescription =
 
 const inputVariations = await generateInputVariations(exampleInput);
 
-// Creating the titles at this point only seemed to confuse the model
-// It was better to just generate the tests straight away
-// const testCaseTitles = await generateTestCaseTitles(
-//   exampleInput,
-//   codemodDescription,
-//   inputVariations,
-// );
+const inputVariationsString =
+  "```ts\n" + inputVariations.join("\n```\n\n```ts\n") + "\n```";
 
-// const tests = await generateTests(
-//   exampleInput,
-//   exampleOutput,
-//   inputVariations,
-//   codemodDescription,
-// );
+fs.writeFileSync("input-variations.md", inputVariationsString);
 
-// console.log("index.ts: tests", tests);
+console.log(
+  "Input variations have been generated. Please take a look at " +
+    "`input-variations.ts` and make any modifications you think are needed.",
+);
 
-// fs.writeFileSync("tests.ts", tests);
+await rl.question("Press Enter to continue...");
+rl.close();
 
 const codemod = await generateCodemod(
   exampleInput,
   exampleOutput,
-  inputVariations,
   codemodDescription,
 );
 
-console.log("index.ts: codemod", codemod);
+console.log("index.ts: codemod");
+console.log(codemod);
 fs.writeFileSync("codemod.ts", codemod ?? "");

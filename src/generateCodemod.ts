@@ -1,5 +1,6 @@
 // Load environment variables (populate process.env from .env file)
 import * as dotenv from "dotenv";
+import fs from "node:fs";
 import OpenAI from "openai";
 
 dotenv.config();
@@ -18,33 +19,32 @@ functions.
 
 function composeInputOutputPart(exampleInput: string, exampleOutput: string) {
   return `You will now be given an example of input that the codemod will need
-to handle. I use tripple backticks to enclose code blocks. The example input is
+to handle. I use typescript code blocks (\`\`\`ts) to enclose the example input.
+The example input is:
 
-\`\`\`
+\`\`\`ts
 ${exampleInput}
 \`\`\`
 
 The expected output for that input is:
 
-\`\`\`
+\`\`\`ts
 ${exampleOutput}
 \`\`\`
 
 `;
 }
 
-function composeVariationsPart(inputVariations?: string[]) {
+function generateVariationsPart() {
+  const inputVariations = fs.readFileSync("input-variations.md", "utf-8");
+
   if (!inputVariations || inputVariations.length < 1) {
     return "";
   }
 
-  const inputVariationsString = inputVariations.join("\n```\n\n```\n");
-
   return `Here are more example input variations that you need to handle:
 
-\`\`\`
-${inputVariationsString}
-\`\`\`
+${inputVariations}
 
 That was the end of all examples.
 
@@ -69,11 +69,10 @@ code.
 export async function generateCodemod(
   exampleInput: string,
   exampleOutput: string,
-  inputVariations: string[],
   codemodDescription: string,
 ) {
   const userMessagePart1 = composeInputOutputPart(exampleInput, exampleOutput);
-  const userMessagePart2 = composeVariationsPart(inputVariations);
+  const userMessagePart2 = generateVariationsPart();
   const userMessagePart3 = composeDescriptionPart(codemodDescription);
   const userMessage = userMessagePart1 + userMessagePart2 + userMessagePart3;
 
