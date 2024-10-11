@@ -1,6 +1,7 @@
 // Load environment variables (populate process.env from .env file)
 import * as dotenv from "dotenv";
 import fs from "node:fs";
+import path from "node:path";
 import OpenAI from "openai";
 
 dotenv.config();
@@ -35,8 +36,13 @@ ${exampleOutput}
 `;
 }
 
-function generateVariationsPart() {
-  const inputVariations = fs.readFileSync("input-variations.md", "utf-8");
+function generateVariationsPart(codemodFolder: string) {
+  // Need to read this from file because the user might have modified it since
+  // we wrote it to the file
+  const inputVariations = fs.readFileSync(
+    path.join(codemodFolder, "input-variations.md"),
+    "utf-8",
+  );
 
   if (!inputVariations || inputVariations.length < 1) {
     return "";
@@ -67,12 +73,13 @@ code.
 }
 
 export async function generateCodemod(
+  codemodFolder: string,
   exampleInput: string,
   exampleOutput: string,
   codemodDescription: string,
 ) {
   const userMessagePart1 = composeInputOutputPart(exampleInput, exampleOutput);
-  const userMessagePart2 = generateVariationsPart();
+  const userMessagePart2 = generateVariationsPart(codemodFolder);
   const userMessagePart3 = composeDescriptionPart(codemodDescription);
   const userMessage = userMessagePart1 + userMessagePart2 + userMessagePart3;
 

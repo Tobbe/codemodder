@@ -1,7 +1,7 @@
 import { ESLint } from "eslint";
 
 export async function runEslintFix(filename: string) {
-  const eslint = new ESLint({ fix: true });
+  const eslint = new ESLint({ fix: true, ignore: false });
 
   const results = await eslint.lintFiles(filename);
 

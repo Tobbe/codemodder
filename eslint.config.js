@@ -15,8 +15,10 @@ export default tseslint.config(
   {
     ignores: [
       "coverage*",
-      "codemods/*",
-      "training data/*",
+      "codemods/**/*",
+      "!codemods/**/*/",
+      "!codemods/**/codemod.ts",
+      "training data/",
       "lib",
       "node_modules",
       "pnpm-lock.yaml",
@@ -79,6 +81,7 @@ export default tseslint.config(
           allowNumber: true,
         },
       ],
+      "jsdoc/tag-lines": ["error", "any", { startLines: 1 }],
       "perfectionist/sort-objects": [
         "error",
         {
@@ -87,7 +90,6 @@ export default tseslint.config(
           type: "natural",
         },
       ],
-      "jsdoc/tag-lines": ["error", "any", { startLines: 1 }],
 
       // Stylistic concerns that don't interfere with Prettier
       "no-useless-rename": "error",
