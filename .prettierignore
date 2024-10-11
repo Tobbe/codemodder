@@ -1,5 +1,7 @@
 .all-contributorsrc
 .husky/
 coverage/
+codemods/
+training data/
 lib/
 pnpm-lock.yaml

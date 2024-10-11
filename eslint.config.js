@@ -15,6 +15,8 @@ export default tseslint.config(
   {
     ignores: [
       "coverage*",
+      "codemods/*",
+      "training data/*",
       "lib",
       "node_modules",
       "pnpm-lock.yaml",

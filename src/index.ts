@@ -3,27 +3,13 @@ import fs from "node:fs";
 import readline from "node:readline/promises";
 
 import { runEslintFix } from "./eslint.js";
+import { generateCodemod } from "./generateCodemod.js";
 import { generateInputVariations } from "./generateInputVariations.js";
 import { runPrettierWrite } from "./prettier.js";
-// import { generateTestCaseTitles } from "./generateTestCaseTitlesForDescription.js";
-// import { generateTests } from "./generateTests.js";
-import { generateCodemod } from "./generateCodemod.js";
+import { readCodemodInputs } from "./readInputs.js";
 import { runTsc } from "./tsc.js";
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-const exampleInput = "import { Router, Route } from '@redwoodjs/router'";
-const exampleOutput = `import { Route } from '@redwoodjs/router',
-import { Router } from '@redwoodjs/vite/Router'`;
-const codemodDescription =
-  "The codemod should change all `Router` imports from " +
-  "`@redwoodjs/router` to import from `@redwoodjs/vite/Router` instead. For " +
-  "the example input code it should split the import statement into two " +
-  "separate import statements. The first import statement should import the " +
-  "'Router' from '@redwoodjs/vite/Router' and the second import statement should import the 'Route' from '@redwoodjs/router'.";
+const { codemodDescription, exampleInput, exampleOutput } = readCodemodInputs();
 
 const inputVariations = await generateInputVariations(exampleInput);
 
@@ -32,12 +18,18 @@ const inputVariationsString =
 
 fs.writeFileSync("input-variations.md", inputVariationsString);
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 console.log(
   "Input variations have been generated. Please take a look at " +
     "`input-variations.ts` and make any modifications you think are needed.",
 );
 
 await rl.question("Press Enter to continue...");
+console.log();
 rl.close();
 
 if (Math.random() > 5) {
