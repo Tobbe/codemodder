@@ -83,6 +83,8 @@ export async function generateCodemod(
   const userMessagePart3 = composeDescriptionPart(codemodDescription);
   const userMessage = userMessagePart1 + userMessagePart2 + userMessagePart3;
 
+  console.log("Asking AI to generate codemod...");
+
   const chatCompletion = await openAi.chat.completions.create({
     messages: [
       {
@@ -100,6 +102,7 @@ export async function generateCodemod(
   });
 
   console.log("chatCompletion.choices", chatCompletion.choices);
+  console.log();
 
   const codemod = chatCompletion.choices[0].message.content;
 
