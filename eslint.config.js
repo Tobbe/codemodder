@@ -18,6 +18,7 @@ export default tseslint.config(
       "codemods/**/*",
       "!codemods/**/*/",
       "!codemods/**/codemod.ts",
+      "!codemods/**/codemod*.ts",
       "training data/",
       "lib",
       "node_modules",

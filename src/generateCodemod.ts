@@ -1,14 +1,7 @@
-// Load environment variables (populate process.env from .env file)
-import * as dotenv from "dotenv";
+import type OpenAI from "openai";
+
 import fs from "node:fs";
 import path from "node:path";
-import OpenAI from "openai";
-
-dotenv.config();
-
-const openAi = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const systemMessage = `You're an expert TypeScript and React developer. Your
 job is to write a codemod using jscodeshift for the given input.
@@ -73,6 +66,7 @@ code.
 }
 
 export async function generateCodemod(
+  openAi: OpenAI,
   codemodFolder: string,
   exampleInput: string,
   exampleOutput: string,
@@ -100,9 +94,6 @@ export async function generateCodemod(
     n: 1,
     temperature: 1,
   });
-
-  console.log("chatCompletion.choices", chatCompletion.choices);
-  console.log();
 
   const codemod = chatCompletion.choices[0].message.content;
 
